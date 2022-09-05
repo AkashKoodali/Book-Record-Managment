@@ -1,8 +1,18 @@
 const express =require("express");
-const router = express.Router();
 const { books } = require("../data/books.json");
 const { users } = require("../data/users.json");
+const {
+    getAllBooks, 
+    getSingleBookById, 
+    getAllIssuedBooks 
+} = require("../controllers/book-controller");
 
+// const BookModel = require("../models/book-model");
+// const UserModel = require("../models/user-model");
+
+const { UserModel, BookModel } = require("../models");
+
+const router = express.Router();
 
 /**
  * Route: /books
@@ -11,12 +21,7 @@ const { users } = require("../data/users.json");
  * Access: Public
  * Parameters: None 
  */
-router.get("/", (req,res)=>{
-    res.status(200).json({
-        suceess: true,
-        data: books,
-    })
-});
+router.get("/", getAllBooks);
 
 
 /**
@@ -26,21 +31,7 @@ router.get("/", (req,res)=>{
  * Access: Public
  * Parameters: id 
  */
- router.get("/:id", (req,res)=>{
-  const { id } = req.params;
-  const book = books.find((each)=> each.id === id);
-  if(!book){
-    return res.status(404).json({
-        success: false,
-        message: "Book not found",
-    });
-  }
-  return res.status(200).json({
-    success: true,
-    data: book,
-  });
-});
-
+ router.get("/:id", getSingleBookById);
 
 
 /**
@@ -50,30 +41,7 @@ router.get("/", (req,res)=>{
  * Access: Public
  * Parameters: none
  */
-router.get("/issued/by-user", (req,res)=>{
-    const usersWithIssuedBooks = users.filter((each) => {
-        if(each.issuedBook) return each; 
-    });
-    const issuedBook = [];
-    usersWithIssuedBooks.forEach((each)=>{
-        const book = books.find((book)=> book.id === each.issuedBook);
-
-        book.issuedBy = each.name;
-        book.issuedDate = each.issuedDate;
-        book.returnDate = each.returnDate;
-        issuedBook.push(book);
-    });
-    if(issuedBook.length === 0)
-     return res.status(404).json({
-        success: false,
-        message: "No books issued yet"
-     });
-    return res.status(200).json({
-        success: true,
-        data: issuedBook,
-    }); 
-});
-
+router.get("/issued/by-user", getAllIssuedBooks);
 
 
 /**
