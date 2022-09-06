@@ -20,6 +20,10 @@ const userSchema = new Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book",
         required: false,
+    },
+    issuedDate:{
+        type: String,
+        required: false,   
     }, 
     returnDate: {
         type: String,
